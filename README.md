@@ -1,44 +1,32 @@
-# IT Jobs Watch Data
+## What are these github repos?
 
-## Introduction
-The aim of this project is to create a simple service that can scrape useful data from ITJobswatch.
+These repos contain the environments for application developers and infrastructure developers to work independently in their own repositories, whilst allowing the developers to use the environments that have been provisioned for them. 
 
-## Current Scope
-At present the app is set up to be cloned and used to simply scrape the below services:
+The general workflow is that developers write code and need an environment to run and test it in. This environment must contain the dependencies that their software needs to run properly. They can pull this environment from the infrastructure repository when they run the command ‘berks vendor cookbooks’, as long as they:
+-Have chef and berks libraries installed on their machine
+-Have a berksfile containing a link to the infrastructure cookbook repository, inside the folder which they are working in
 
-1. Home page top 30 job/roles / skills which can be found [here]()
+To deliver as much value as possible for a given time frame, as much of the workflow as possible is automated, the goal which is to achieve CI (Continuous Integration) and CD (Continuous Deployment). For this, the automation software ‘Jenkins’ is used. 
 
-The aim will be to expand this to further services such as:
+## Jenkins job 1 - Tests
 
-* Regular polling of pages and writing to a database for longer terms stats
-* Bespoke calls for specific job role data
+The first Jenkins job is to run tests to ensure the code that has been pushed to the developer branch of the repository runs bug free. This includes both unit tests (testing the new code in isolation) and integration tests (testing whether the system works when then new code is added). If the tests pass, then the next Jenkins job is called. 
 
-And much more.
+## What tests are running?
 
-## Usage
-_Pre-Requisites_
-* Pycharm IDE
-* Python 3.x + installed
+In the application pipeline, the first Jenkins jobs runs the pytest suite included in the application repository, which requires a slave node in Jenkins, since Python is required on any machine to run Python code on it. Therefore, an AMI is needed, to provision the slave node with Python.
 
-### Installing packages
-The necessary packages needed to run this program should automatically be picked up by pycharm. You may find a a few pop ups within the IDE that state there are dependencies missing, if you simply install these through the IDE you should be set up correctly.  
+In the infrastructure pipeline, the first Jenkins job runs the unit tests for the cookbooks, checking whether the syntax inside the recipe file ‘default.rb’ is correct for chef. The chef command for running the unit tests is ‘chef exec rspec’. Following the unit tests, the integration tests are run, the chef command for this being ‘kitchen test’ which builds a VM and ensures the recipe file has provisioned all the required packages and everything that the recipe is required to do is working properly. The VM is then destroyed. A slave node in Jenkins is also needed for this job since chef is required on the machine to run the tests, 
+Note:
+The unit tests are contained in the —- file
+The integration tests are contained in the —- file
 
-### Running tests
+## Jenkins job 2 - Merge to master
 
-To test whether the program will work from your machine:
- 
- * Ensure the `config.ini` file has the test environment set to `live`
- * Click the `Terminal` icon which can be found on the menu in the bottom left of Pycharm.
-* Ensure you're in the root path of the project and type `python -m pytest tests/`
+For both repositories, if the previous job is successful then a new Jenkins job is called which merges developer code to master since it’s now known that the new code will run as desired.
 
-This should execute the tests if any fail you may have issues with this program.
+Job 1 and job 2 combine to ensure the Continuous Integration (CI) part of the pipeline for both repositories.
 
-### Running and using the program
-To use the program simply right click on the `main.py` file and then click `Run 'main'`. This will run the command line user interface.
+## Job 3 - Packer
 
-Follow the instructions to download via the various options given.
-
-# Next steps
-* Adding a job details search option (essentially be able to search for a specific role and return the details in a CSV)
-* create a connected database for full deployment
-* Build a scheduler as part of a full deployment to poll and add to the database 
+Packer is used for the automated generation of machine images, such as a vagrantfile or an Amazon AMI, which are used as templates when building virtual machines. This allows our work process to include Continuous Deployment, since the successful updating of our software leads to a new AMI being created and automatically deployed to AWS. 
