@@ -26,4 +26,6 @@ Job 1 and job 2 combine to ensure the Continuous Integration (CI) part of the pi
 
 ## Job 3 - Packer
 
-Packer is used for the automated generation of machine images, such as a vagrantfile or an Amazon AMI, which are used as templates when building virtual machines. This allows our work process to include Continuous Deployment, since the successful updating of our software leads to a new AMI being created and automatically deployed to AWS. 
+Packer is used for the automated generation of machine images, such as a vagrantfile or an Amazon AMI, which are used as templates when building virtual machines. This allows our work process to include Continuous Deployment, since the successful updating of our software leads to a new AMI being created and automatically deployed to AWS.
+
+This repo also contains a berksfile, used for pulling the Infrastructure code (cookbook) into the folder and a gitignore, to prevent changes to the cookbook from being pushed.
