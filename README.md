@@ -16,10 +16,7 @@ The first Jenkins job is to run tests to ensure the code that has been pushed to
 
 In the application pipeline, the first Jenkins jobs runs the pytest suite included in the application repository, which requires a slave node in Jenkins, since Python is required on any machine to run Python code on it. Therefore, an AMI is needed, to provision the slave node with Python.
 
-In the infrastructure pipeline, the first Jenkins job runs the unit tests for the cookbooks, checking whether the syntax inside the recipe file ‘default.rb’ is correct for chef. The chef command for running the unit tests is ‘chef exec rspec’. Following the unit tests, the integration tests are run, the chef command for this being ‘kitchen test’ which builds a VM and ensures the recipe file has provisioned all the required packages and everything that the recipe is required to do is working properly. The VM is then destroyed. A slave node in Jenkins is also needed for this job since chef is required on the machine to run the tests, 
-Note:
-The unit tests are contained in the —- file
-The integration tests are contained in the —- file
+In the infrastructure pipeline, the first Jenkins job runs the unit tests for the cookbooks, checking whether the syntax inside the recipe file ‘default.rb’ is correct for chef. The chef command for running the unit tests is ‘chef exec rspec’. Following the unit tests, the integration tests are run, the chef command for this being ‘kitchen test’ which builds a VM and ensures the recipe file has provisioned all the required packages and everything that the recipe is required to do is working properly. The VM is then destroyed. A slave node in Jenkins is also needed for this job since chef is required on the machine to run the tests.
 
 ## Jenkins job 2 - Merge to master
 
